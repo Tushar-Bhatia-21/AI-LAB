@@ -1,31 +1,33 @@
-from itertools import permutations
+import itertools
 
-def solve_cryptarithmetic(puzzle):
-    # Extracting unique letters from the puzzle
-    letters = set(puzzle.replace(' ', ''))
 
-    # Generating permutations of digits from 0 to 9
-    digit_permutations = permutations(range(10), len(letters))
+def get_value(word, substitution):
+    s = 0
+    factor = 1
+    for letter in reversed(word):
+        s += factor * substitution[letter]
+        factor *= 10
+    return s
 
-    for perm in digit_permutations:
-        # Mapping letters to digits
-        digit_mapping = {letter: digit for letter, digit in zip(letters, perm)}
-        
-        # Replace letters with corresponding digits and evaluate the expression
-        expression = ''.join(str(digit_mapping.get(letter, letter)) for letter in puzzle)
-        expression = expression.replace(' ', '')  # Remove spaces
-        if eval(expression):
-            return digit_mapping
 
-    return None
+def solve2(equation):
+    # split equation in left and right
+    left, right = equation.lower().replace(' ', '').split('=')
+    # split words in left part
+    left = left.split('+')
+    # create list of used letters
+    letters = set(right)
+    for word in left:
+        for letter in word:
+            letters.add(letter)
+    letters = list(letters)
 
-# User input for the cryptarithmetic puzzle
-puzzle = input("Enter the cryptarithmetic puzzle: ")
+    digits = range(10)
+    for perm in itertools.permutations(digits, len(letters)):
+        sol = dict(zip(letters, perm))
 
-solution = solve_cryptarithmetic(puzzle)
-if solution:
-    print("Solution found:")
-    for letter, digit in solution.items():
-        print(f"{letter}: {digit}")
-else:
-    print("No solution found.")
+        if sum(get_value(word, sol) for word in left) == get_value(right, sol):
+            print(' + '.join(str(get_value(word, sol)) for word in left) + " = {} (mapping: {})".format(get_value(right, sol), sol))
+
+if __name__ == '__main__':
+    solve2('SEND + MORE = MONEY')
