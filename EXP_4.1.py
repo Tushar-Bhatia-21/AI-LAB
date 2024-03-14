@@ -1,21 +1,21 @@
 import itertools
 
-
 def get_value(word, substitution):
-    s = 0
-    factor = 1
+    total = 0
+    multiplier = 1
     for letter in reversed(word):
-        s += factor * substitution[letter]
-        factor *= 10
-    return s
+        total += multiplier * substitution[letter]
+        multiplier *= 10
+    return total
 
-
-def solve2(equation):
-    # split equation in left and right
+def solve_equation(equation):
+    # Split equation into left and right parts
     left, right = equation.lower().replace(' ', '').split('=')
-    # split words in left part
+    
+    # Split words in the left part
     left = left.split('+')
-    # create list of used letters
+    
+    # Create a set of used letters
     letters = set(right)
     for word in left:
         for letter in word:
@@ -30,4 +30,4 @@ def solve2(equation):
             print(' + '.join(str(get_value(word, sol)) for word in left) + " = {} (mapping: {})".format(get_value(right, sol), sol))
 
 if __name__ == '__main__':
-    solve2('SEND + MORE = MONEY')
+    solve_equation('SEND + MORE = MONEY')
