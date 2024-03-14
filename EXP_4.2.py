@@ -1,3 +1,6 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class Graph:
     def __init__(self, vertices):
         self.vertices = vertices
@@ -41,6 +44,21 @@ if __name__ == "__main__":
     g.add_edge(3, 4)
 
     colors = g.greedy_coloring()
-    print("Vertex \t Color")
-    for i in range(len(colors)):
-        print(f"{i} \t {colors[i]}")
+
+    # Create a networkx graph
+    G = nx.Graph()
+    for i in range(g.vertices):
+        G.add_node(i)
+
+    for i in range(g.vertices):
+        for j in range(g.vertices):
+            if g.graph[i][j] == 1:
+                G.add_edge(i, j)
+
+    # Assign colors to nodes based on greedy coloring
+    node_colors = [colors[i] for i in range(len(colors))]
+
+    # Plot the graph
+    pos = nx.spring_layout(G)  # Positions for all nodes
+    nx.draw(G, pos, with_labels=True, node_color=node_colors, cmap=plt.cm.rainbow)
+    plt.show()
