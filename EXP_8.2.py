@@ -1,39 +1,39 @@
 import nltk
 import re
 import numpy as np
-import heapq
 
-
+# Sample text
 text = "NLTK is a powerful tool for natural language processing. It provides easy-to-use interfaces to over 50 corpora and lexical resources such as WordNet, along with a suite of text processing libraries for tokenization, parsing, classification, stemming, tagging, and semantic reasoning."
 
-dataset=nltk.sent_tokenize(text)
-for i in range(len(dataset)):
-    dataset[i]=dataset[i].lower()
-    dataset[i]=re.sub(r'\W',' ',dataset[i])
-    dataset[i]=re.sub(r'\s+',' ',dataset[i])
+# Tokenize the text into words
+words = nltk.word_tokenize(text)
 
-word2count={}
-for data in dataset:
-    words=nltk.word_tokenize(data)
-    for word in words:
-        if word not in word2count.keys():
-            word2count[word]=1
-        else:
-            word2count[word]+=1
+# Clean the words (remove non-alphanumeric characters and convert to lowercase)
+words = [word.lower() for word in words if re.match('^[a-zA-Z]+$', word)]
 
+# Create a dictionary to store word counts
+word_counts = {}
 
-freq_words = heapq.nlargest(400, word2count, key=word2count.get)
+# Count occurrences of each word
+for word in words:
+    if word not in word_counts:
+        word_counts[word] = 1
+    else:
+        word_counts[word] += 1
 
-X = [] 
-for data in dataset: 
-    vector = [] 
-    for word in freq_words: 
-        if word in nltk.word_tokenize(data): 
-            vector.append(1) 
-        else: 
-            vector.append(0) 
-    X.append(vector) 
-X = np.asarray(X) 
+# Get the unique words (vocabulary)
+vocabulary = sorted(word_counts.keys())
 
-print(X)
-print(freq_words)
+# Create a matrix to represent Bag-of-Words
+bow_matrix = np.zeros((len(words), len(vocabulary)))
+
+# Populate the matrix with word counts
+for i, word in enumerate(words):
+    for j, vocab_word in enumerate(vocabulary):
+        if word == vocab_word:
+            bow_matrix[i, j] += 1
+
+print("Bag-of-Words Matrix:")
+print(bow_matrix)
+print("\nVocabulary:")
+print(vocabulary)
